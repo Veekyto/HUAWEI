@@ -111,6 +111,7 @@ class GA:
             self.disks_plan=[-1]*num_tasks
             self.cost=0
             self.error=0
+            self.mode=-1
 
     def __init__(self, tasks, machines, disks,  pop_size=50, crossover_rate=0.8, mutation_rate=0.2):
         self.tasks = tasks
@@ -166,6 +167,7 @@ class GA:
             offspring.machines_plan=parent1.machines_plan[:crossover_point] + parent2.machines_plan[crossover_point:]
             if random.random() < 0.5:
                 offspring.disks_plan=parent1.disks_plan[:crossover_point] + parent2.disks_plan[crossover_point:]
+            offspring.mode=0
         return offspring
 
     def mutate(self, solution):
@@ -247,6 +249,12 @@ class GA:
                 if child.error==0:
                     new_population.append(child)
                     it+=1
+                    global count1
+                    global count2
+                    if(child.mode==-1):
+                        count1+=1
+                    else:
+                        count2+=1
                 
             self.population=new_population
             self.population.sort(key=lambda x: x.cost)
@@ -296,7 +304,10 @@ def main():
     # record_cost=[]
     # record_error=[]
     tasks, machines, disks = load_data()
-    count=0
+    global count1  # Declare count1 as global
+    global count2 
+    count1=0
+    count2=0
 
     #for i in tasks:
         #print(i.id,i.size,i.output,i.num_machines,i.affinitive_machines)
@@ -306,7 +317,7 @@ def main():
     ga_slover.solver()  
     print("cost=",ga_slover.record_cost)
     print("error=",ga_slover.record_error)
-    # print(count)
+    print(count1,count2)
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8))
 
     ax1.plot(range(len(ga_slover.record_cost)), ga_slover.record_cost, label='Cost')
